@@ -16,7 +16,7 @@ const FetchItems = () => {
     if (fetchStatus.fetchDone) return;
 
     dispatch(FetchActions.markFetchingStart())
-    fetch('http://localhost:8080/items'/*,{signal}*/)
+    fetch('https://myntra-project-w1dq.onrender.com/items'/*,{signal}*/)
     
       .then((response) => {
         console.log("Fetching started")
