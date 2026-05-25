@@ -24,7 +24,7 @@ const FetchItems = () => {
       .then(({items}) => {
         console.log(items);
         
-        dispatch(itemActions.addInitialItems(items[0]))
+        dispatch(itemActions.addInitialItems(items))
         dispatch(FetchActions.markFetchDone())
         dispatch(FetchActions.markFetchingEnd())
       })
