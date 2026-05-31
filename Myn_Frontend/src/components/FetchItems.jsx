@@ -3,37 +3,40 @@ import { useDispatch, useSelector } from "react-redux";
 import { itemActions } from "../myntraStore/itemsSlice";
 import { FetchActions } from "../myntraStore/FetchStatusSlice";
 
+const API_URL = import.meta.env.VITE_API_URL ?? "https://myntra-project-w1dq.onrender.com";
+
+function normalizeItems(items) {
+  if (!Array.isArray(items)) return [];
+  if (items.length === 1 && Array.isArray(items[0])) return items[0];
+  return items;
+}
+
 const FetchItems = () => {
 
     const fetchStatus = useSelector((store)=>store.fetchStatus)
     const dispatch = useDispatch();
 
-    
-
-    // const controller = new AbortController();
-    // const signal = controller.signal;
  useEffect(() => {
     if (fetchStatus.fetchDone) return;
 
     dispatch(FetchActions.markFetchingStart())
-    fetch('https://myntra-project-w1dq.onrender.com/items'/*,{signal}*/)
-    
+    fetch(`${API_URL}/items`)
       .then((response) => {
-        console.log("Fetching started")
-        return response.json()}) 
-      .then(({items}) => {
-        console.log(items);
-        
-        dispatch(itemActions.addInitialItems(items))
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(({ items }) => {
+        dispatch(itemActions.addInitialItems(normalizeItems(items)))
         dispatch(FetchActions.markFetchDone())
         dispatch(FetchActions.markFetchingEnd())
       })
-      .catch((error) => console.error('Error fetching data:', error));
-
-    //   return ()=>{
-    //     controller.abort();
-    //   }
-  }, [fetchStatus.fetchDone]);
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        dispatch(FetchActions.markFetchingEnd());
+      });
+  }, [fetchStatus.fetchDone, dispatch]);
 
     return<>
     </>
